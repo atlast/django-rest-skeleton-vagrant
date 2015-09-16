@@ -1,0 +1,12 @@
+[submodule "modules/nginx"]
+	path = modules/nginx
+	url = https://github.com/ezarko/puppetlabs-nginx
+[submodule "modules/stdlib"]
+	path = modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "modules/postgresql"]
+	path = modules/mysql
+	url = https://github.com/puppetlabs/puppetlabs-postgresql.git
+[submodule "modules/sudoers"]
+	path = modules/sudoers
+	url = https://github.com/windowsrefund/puppet-sudoers.git
