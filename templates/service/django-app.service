@@ -1,0 +1,15 @@
+[Unit]
+Description=Django app service
+After=network.target
+
+[Service]
+User=vagrant
+Restart=on-abort
+WorkingDirectory=/vagrant/site
+ExecStart=/home/vagrant/.virtualenvs/app/bin/gunicorn \
+    --reload                                          \
+    --bind 0.0.0.0:8001 app.wsgi:application
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
