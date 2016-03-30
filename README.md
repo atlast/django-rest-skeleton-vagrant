@@ -64,6 +64,8 @@ vagrant (watch the console output when running `vagrant up`) the site may be on 
 I have been having trouble getting puppet to enable the services to run on boot so you may have to run
 `vagrant provision` instead of `vagrant reload` to get the app running again.
 
+A default super user is created with the username of `admin` and a password of `password`
+
 ### Notes ###
 
 This is still a work in progress. Ask me if you have any questions or need help: me@chrislondon.co
