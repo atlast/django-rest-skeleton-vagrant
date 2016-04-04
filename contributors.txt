@@ -1,0 +1,4 @@
+This file contains a list of people who are considered leads in the project.
+
+Chris London https://github.com/chrislondon
+Mitch Redmond https://github.com/mohawkstudios
