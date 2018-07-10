@@ -1,15 +1,20 @@
-VAGRANTFILE_API_VERSION = "2"
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.box = "ubuntu/trusty64"
-
-    config.vm.network "forwarded_port", guest: 8000, host: 8000, auto_correct: true
-
-    config.vm.provision :puppet do |puppet|
-        puppet.manifests_path = "puppet"
-        puppet.manifest_file  = "manifests"
+Vagrant.configure(2) do |config|
+    # Box: Ubuntu 14.x 64bit
+    config.vm.box = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  
+    # API port
+    config.vm.network "forwarded_port", guest: 8000, host: 8000
+  
+    # Postgresql port
+    config.vm.network "forwarded_port", guest: 5432, host: 5432
+  
+    config.vm.provision "ansible" do |ansible|
+        ansible.playbook = "provision/ansible.yml"
     end
-
-    config.vm.provision "shell", inline: "systemctl restart nginx", run: "always"
-    config.vm.provision "shell", inline: "systemctl restart django-app", run: "always"
-end
+  
+    # config.vm.provision "shell", path: "config/boot.sh", privileged: false, run: "always"
+  end
+  

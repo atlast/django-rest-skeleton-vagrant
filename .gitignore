@@ -1,2 +1,4 @@
-__pycache__
-.vagrant/
+.vagrant
+manage.py
+app/*
+!app/.keep

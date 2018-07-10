@@ -7,6 +7,7 @@ This repository is for rapidly setting up a Django/Rest Framework development en
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 * [Vagrant](http://www.vagrantup.com/downloads.html)
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git) - *Mac users may want to install [X-Code](https://developer.apple.com/xcode/downloads/) and [X-Code Command Line Tools](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/)*
+* [Ansible](http://docs.ansible.com/ansible/intro_installation.html)
 
 ### Installation ###
 
@@ -19,6 +20,26 @@ git clone --recursive https://github.com/chrislondon/django-rest-skeleton-vagran
 ~~~
 vagrant up
 ~~~
+
+* By default the django-admin startproject uses sqlite.  The vagrant repo is all set up to use PostgreSQL but the database settings in `app/settings.py` need to be changed to:
+~~~
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'app',
+        'USER': 'app',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+~~~
+
+* Also you'll need to run `vagrant ssh`, `workon app`, `cd /vagrant`, `python3 manage.py migrate` to set up the database
+
+* Also do `django-admin createsuperuser` to create a super user
+
+* Navigate to `http://localhost:8000` to see your site
 
 ### Vagrant Quick Tips ###
 
@@ -61,16 +82,11 @@ Once you've initiated the code with `vagrant up` (it will take a while because i
 dependencies you can view the app at `http://localhost:8000`. If there was a port conflict in spinning up 
 vagrant (watch the console output when running `vagrant up`) the site may be on a different port.
 
-I have been having trouble getting puppet to enable the services to run on boot so you may have to run
-`vagrant provision` instead of `vagrant reload` to get the app running again.
-
-A default super user is created with the username of `admin` and a password of `password`
-
 ### Notes ###
 
-This is still a work in progress. Ask me if you have any questions or need help: me@chrislondon.co
+* Uses Python 3
+* Django 2.0.7
 
 ### TODO ###
 
-* Set up Postgresql instead of Sqlite
 * Set up frequently used features like registration and forgot password

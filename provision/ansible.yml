@@ -1,0 +1,126 @@
+---
+- name: Install backend server
+  hosts: all
+  remote_user: vagrant
+  tasks:
+    - name: update apt-cache
+      apt:
+        update_cache: yes
+      become: true
+
+    - name: install postgresql and related
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - postgresql
+        - libpq-dev
+        - postgresql-contrib
+        - python-psycopg2
+      environment:
+        LC_ALL: en_US.UTF-8
+      become: true
+
+    - name: install pip for python 3
+      apt:
+        name: python3-pip
+        state: present
+      become: true
+
+    - name: install virtualenv
+      pip:
+        executable: pip3
+        name: "{{ item }}"
+      with_items:
+        - virtualenv
+        - virtualenvwrapper
+      become: true
+
+    - name: manually create the initial virtualenv
+      command: virtualenv /home/vagrant/.virtualenvs/app -p python3 creates="/home/vagrant/.virtualenvs/app"
+
+    # We may want to do this always
+    - name: install python requirements
+      pip:
+        requirements: /vagrant/provision/pip_requirements.txt
+        executable: /home/vagrant/.virtualenvs/app/bin/pip3
+
+    - name: install python django tools
+      apt:
+        name: python-django
+        state: present
+      become: true
+
+    - name: configure pg_hba.conf
+      copy:
+        src: ./pg_hba.conf
+        dest: /etc/postgresql/9.3/main/pg_hba.conf
+      become: true
+
+    - name: configure postgres.conf
+      lineinfile:
+        path: /etc/postgresql/9.3/main/postgresql.conf
+        regexp: '.*listen_addresses.*'
+        line: "listen_addresses='*'"
+      become: true
+
+    - name: restart postgres
+      service:
+        name: postgresql
+        state: restarted
+      become: true
+
+    - name: implement virtualenv wrapper
+      blockinfile:
+        dest: /home/vagrant/.bashrc
+        content: |
+          export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+          export WORKON_HOME=~/.virtualenvs
+          . /usr/local/bin/virtualenvwrapper.sh
+
+    - name: create default database
+      postgresql_db:
+        name: app
+        encoding: UTF-8
+        lc_collate: en_US.UTF-8
+        lc_ctype: en_US.UTF-8
+
+    - name: create server user for database
+      user:
+        name: postgres
+      become: yes
+
+    - name: create default db user
+      become: yes
+      become_user: postgres
+      postgresql_user:
+        db: app
+        name: app
+        password: password
+
+    - name: Ensure we have access for the new user
+      become: yes
+      become_user: postgres
+      postgresql_privs:
+        db: app
+        role: app
+        objs: ALL_IN_SCHEMA
+        privs: SELECT,INSERT,UPDATE,DELETE
+
+    - name: start django project
+      command: /home/vagrant/.virtualenvs/app/bin/django-admin startproject app /vagrant/
+      args:
+        creates: /vagrant/manage.py
+
+    - name: set up django upstart
+      copy:
+        src: ./django.conf
+        dest: /etc/init/django.conf
+      become: true
+
+    - name: enable django server
+      service:
+        name: django
+        state: started
+        enabled: yes
+      become: true
