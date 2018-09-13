@@ -85,7 +85,7 @@ vagrant (watch the console output when running `vagrant up`) the site may be on 
 ### Notes ###
 
 * Uses Python 3
-* Django 2.0.7
+* Django 2.1.1
 
 ### TODO ###
 
